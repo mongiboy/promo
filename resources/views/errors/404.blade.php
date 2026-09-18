@@ -13,10 +13,12 @@
         <a href="{{ route('shops.index') }}" class="text-center text-primary hover:text-primary-dark font-bold mt-8">Все магазины</a>
     </div>
 @endsection
+@push('scripts')
 <script>
-    /*
-    trackGoal('404_page', {
-        url: window.location.pathname,
+    window.addEventListener('load', function () {
+        window.trackGoal('404_page', {
+            url: window.location.pathname,
+        });
     });
-    */
 </script>
+@endpush

@@ -1,8 +1,5 @@
 import Swiper from 'swiper';
 import { Grid, Autoplay } from 'swiper/modules';
-import 'swiper/css';
-import 'swiper/css/grid';
-import 'swiper/css/autoplay';
 
 
 const swiper = new Swiper('.swiper', {
@@ -38,12 +35,12 @@ document.querySelectorAll('a[data-id]').forEach(link => {
     })
 })
 
-/*
-function trackGoal(goal, params = undefined) {
+
+window.trackGoal = function (goal, params = undefined) {
     if (typeof ym !== 'function') {
         return;
     }
 
-    ym(12345678, 'reachGoal', goal, params);
+    ym(112751477, 'reachGoal', goal, params);
 }
-*/
+

@@ -4,7 +4,7 @@
             <span class="font-logo text-2xl">Коды<span class="text-accent">&</span>Купоны</span>
         </a>
         <div x-data="{ open: false }" class="lg:hidden">
-            <button @click="open = !open" class="focus:outline-none block absolute top-1/2 right-6 -translate-y-1/2">
+            <button aria-label="Поиск" @click="open = !open" class="focus:outline-none block absolute top-1/2 right-6 -translate-y-1/2">
                 <x-heroicon-s-magnifying-glass class="w-6 h-6 text-accent" stroke-width="2"/>
             </button>
             <div x-show="open" @click.away="open = false" x-transition
