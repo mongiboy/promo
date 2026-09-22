@@ -26,14 +26,14 @@ const swiper = new Swiper('.swiper', {
     },
 });
 
-document.querySelectorAll('a[data-id]').forEach(link => {
+document.querySelectorAll('a[data-coupon]').forEach(link => {
     link.addEventListener('click', () => {
         const url = new URL(window.location.href)
         url.searchParams.set('cid', link.dataset.id)
 
         window.open(url.toString(), '_blank')
     })
-})
+});
 
 
 window.trackGoal = function (goal, params = undefined) {
@@ -44,3 +44,30 @@ window.trackGoal = function (goal, params = undefined) {
     ym(112751477, 'reachGoal', goal, params);
 }
 
+document.querySelectorAll('a.offer').forEach((offer) => {
+    offer.addEventListener('click', () => {
+        console.log(offer.dataset.id);
+        trackGoal('offer_click', {
+            'offer_id': offer.dataset.id,
+        });
+    });
+});
+
+
+let searchStarted = false
+document.querySelectorAll('input[name="shops-search"]').forEach((input) => {
+    input.addEventListener('input', () => {
+        if(!searchStarted) trackGoal('search_started');
+        searchStarted = true;
+    })
+});
+
+document.addEventListener('click', e => {
+    const link = e.target.closest('.shops-search a[data-search-shop]')
+
+    if (!link) return
+    trackGoal('search_shops_click', {
+        'search_shop': link.dataset.searchShop,
+    });
+    console.log(link.dataset.searchShop)
+})
