@@ -14,14 +14,19 @@ class Search extends Component
 
     public function updatedQuery(): void
     {
-        if (mb_strlen($this->query) < 1) {
+        if (mb_strlen($this->query) < 2) {
             $this->shops = [];
             return;
         }
 
         $this->shops = Shop::query()
             ->visible()
-            ->where('name', 'like', "%{$this->query}%")
+            ->where(function ($query) {
+                $query
+                    ->where('name', 'like', "%{$this->query}%")
+                    ->orWhere('aliases', 'like', "%{$this->query}%")
+                    ->orWhere('slug', 'like', "%{$this->query}%");
+            })
             ->limit(5)
             ->get();
     }
