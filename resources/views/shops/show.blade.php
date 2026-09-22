@@ -16,12 +16,17 @@
         </div>
     </div>
 
-    <h2 class="sr-only">Актуальные промокоды и скидки {{ $shop->name }}</h2>
-    <x-cards>
-        @foreach($offers as $offer)
-            <x-card :$offer :showLogo="false" :show-description="true"/>
-        @endforeach
-    </x-cards>
+    @if($offers->count() > 0)
+        <h2 class="sr-only">Актуальные промокоды и скидки {{ $shop->name }}</h2>
+        <x-cards>
+            @foreach($offers as $offer)
+                <x-card :$offer :showLogo="false" :show-description="true"/>
+            @endforeach
+        </x-cards>
+    @else
+        <p class="font-bold text-center text-accent text-3xl my-6">Сейчас нет активных промокодов</p>
+        <p>К сожалению, у магазина пока нет доступных промокодов. Проверяйте страницу позже — мы обновляем предложения по мере появления новых.</p>
+    @endif
 
     @if($similarShops->isNotEmpty())
         <x-h2>Похожие магазины</x-h2>
