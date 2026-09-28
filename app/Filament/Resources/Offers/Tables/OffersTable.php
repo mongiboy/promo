@@ -20,19 +20,18 @@ class OffersTable
             ->columns([
                 TextColumn::make('shop.name')
                     ->label('Магазин')
-                    //->extraAttributes(['style' => 'width: 150px;'])
                     ->wrap()
                     ->lineClamp(2)
                     ->searchable(),
                 TextColumn::make('title')
                     ->label('Заголовок')
-                    //->extraAttributes(['style' => 'width: 250px;'])
                     ->wrap()
                     ->lineClamp(2)
                     ->searchable(),
                 TextColumn::make('description')
                     ->label('Описание')
-                    //->extraAttributes(['style' => 'width: 350px;'])
+                    ->formatStateUsing(fn (?string $state) => trim(strip_tags($state ?? '')))
+                    ->limit(100)
                     ->wrap()
                     ->lineClamp(2)
                     ->searchable(),
@@ -101,6 +100,8 @@ class OffersTable
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
                 ]),
-            ]);
+            ])
+            ->paginated([10, 25, 50, 100, 'all'])
+            ->defaultPaginationPageOption(25);
     }
 }
