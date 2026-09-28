@@ -59,6 +59,10 @@ class AdvcakeFeedParser implements OfferFeedParser
             $discount = null;
         }
 
+        if ($row['Оффер'] === 'dostavka.magnit.ru (приложение)') {
+            $row['Оффер'] = 'https://magnit.ru/';
+        }
+
         return [
             'shop_domain' => $row['Оффер'],
             'title' => $row['Привязка к акции'],
