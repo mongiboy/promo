@@ -8,7 +8,7 @@
    href="{{ route('offer.redirect', $offer) }}" rel="nofollow sponsored" data-id="{{$offer->id}}" {{ $offer->promocode ? 'data-coupon' : 'target="_blank"' }}>
     @if($showLogo)
     <div class="mx-5 lg:mx-0 h-20 flex justify-center mb-6">
-        <img class="" src="{{ asset('storage/shops/' . $offer->shop->logo) }}" alt="{{ $offer->shop->name }}">
+        <img class="" src="{{ asset('storage/' . $offer->shop->logo) }}" alt="{{ $offer->shop->name }}">
     </div>
     @endif
 
