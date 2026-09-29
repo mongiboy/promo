@@ -11,7 +11,7 @@ use App\Traits\ExtractsErid;
 
 class AdvcakeFeedParser implements OfferFeedParser
 {
-    use ExtractsErid, ExtractsDomain, ParsesDate;
+    use ExtractsDomain, ParsesDate;
 
     public function parseFeed(string $path): array
     {
@@ -47,10 +47,6 @@ class AdvcakeFeedParser implements OfferFeedParser
     {
         if (empty($row['Реферальная ссылка'])) return null;
 
-        $erid = $this->extractErid($row['Реферальная ссылка']);
-
-        if ($erid === null) return null;
-
         if($row['Единица скидки'] === 'Рубли') {
             $discount = $row['Скидка'] . '₽';
         } elseif ($row['Единица скидки'] === 'Проценты') {
@@ -72,7 +68,6 @@ class AdvcakeFeedParser implements OfferFeedParser
             'discount' => $discount,
             'promocode' => $row['Код'] ?? null,
             'url' => $row['Реферальная ссылка'],
-            'erid' => $erid,
             'partner_network' => PartnerNetwork::Advcake->value,
         ];
     }

@@ -25,6 +25,7 @@ class Offer extends Model
         'rating',
         'is_moderated',
         'is_active',
+        'is_rejected',
         'partner_network',
         'external_id',
     ];

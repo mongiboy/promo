@@ -11,7 +11,7 @@ use App\Traits\ExtractsErid;
 
 class AdmitadFeedParser implements OfferFeedParser
 {
-    use ExtractsErid, ExtractsDomain, ParsesDate;
+    use ExtractsDomain, ParsesDate;
 
     public function parseFeed(string $path): array
     {
@@ -43,10 +43,6 @@ class AdmitadFeedParser implements OfferFeedParser
     {
         if (empty($row['gotolink'])) return null;
 
-        $erid = $this->extractErid($row['gotolink']);
-
-        if ($erid === null) return null;
-
         return [
             'shop_domain' => $this->extractDomain($row['site']),
             'title' => $row['name'],
@@ -56,7 +52,6 @@ class AdmitadFeedParser implements OfferFeedParser
             'discount' => $row['discount'] ?? null,
             'promocode' => $row['species'] === 'action' ? null : $row['promocode'],
             'url' => $row['gotolink'],
-            'erid' => $erid,
             'partner_network' => PartnerNetwork::Admitad->value,
             'external_id' => $row['id'],
         ];

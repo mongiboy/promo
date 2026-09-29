@@ -34,13 +34,15 @@ class OfferImportService
         foreach ($offers as $offer) {
             $shopDomain = $offer['shop_domain'];
             if ($shopDomain === 'aliexpress.com') continue;
-
             $shopId = $shopIdsByDomain[$shopDomain] ?? null;
-            unset($offer['shop_domain']);
 
             if ($shopId == null) continue;
 
-            $rows[] = [...$offer, 'shop_id' => $shopId, 'is_active' => true];
+            $offer_hash = hash('sha256', $network->value . '|' . $shopId . '|' . $offer['title'] . '|' . $offer['starts_at']);
+
+            unset($offer['shop_domain']);
+
+            $rows[] = [...$offer,'offer_hash' => $offer_hash, 'shop_id' => $shopId, 'is_active' => true];
         }
 
         if (empty($rows)) return null;
@@ -50,7 +52,7 @@ class OfferImportService
 
             Offer::upsert(
                 $rows,
-                uniqueBy: ['erid'],
+                uniqueBy: ['offer_hash'],
                 update: ['expires_at', 'url', 'is_active']
             );
         });
