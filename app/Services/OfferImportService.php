@@ -38,7 +38,7 @@ class OfferImportService
 
             if ($shopId == null) continue;
 
-            $offer_hash = hash('sha256', $network->value . '|' . $shopId . '|' . $offer['title'] . '|' . $offer['starts_at']);
+            $offer_hash = hash('sha256', $network->value . '|' . $shopId . '|' . $offer['title'] . '|' . ($offer['starts_at']?->format('Y-m-d') ?? ''));
 
             unset($offer['shop_domain']);
 
