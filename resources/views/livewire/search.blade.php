@@ -8,7 +8,7 @@
             @foreach($shops as $shop)
                 <li class="pl-4 py-2">
                     <a href="{{ route('shops.show', $shop) }}" data-search-shop="{{$shop->name}}" class="flex flex-row items-center">
-                        <img src="{{ asset('storage/shops/' . $shop->logo) }}" alt="{{$shop->name}}" width="60" class="max-h-6 object-contain pe-4">
+                        <img src="{{ asset('storage/' . $shop->logo) }}" alt="{{$shop->name}}" width="60" class="max-h-6 object-contain pe-4">
                         <span class="font-medium">{{ $shop->name }}</span>
                     </a>
                 </li>
