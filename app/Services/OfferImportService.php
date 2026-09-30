@@ -15,15 +15,21 @@ class OfferImportService
 {
     use ExtractsDomain;
 
-    public function importFromFile(PartnerNetwork $network, string $filePath): ?int
+    public function importFromFile(PartnerNetwork $network, string $filePath): array
     {
         $parser = $this->resolveAdapter($network);
         $offers = $parser->parseFeed($filePath);
         return $this->upsertOffers($offers, $network);
     }
 
-    private function upsertOffers(array $offers, PartnerNetwork $network): ?int
+    private function upsertOffers(array $offers, PartnerNetwork $network): array
     {
+        $result = [
+            'total' => count($offers),
+            'skipped' => 0,
+            'skipped_shops' => [],
+        ];
+
         $shopIdsByDomain = Shop::query()
             ->pluck('url', 'id')
             ->mapWithKeys(fn (string $url, int|string $id) => [
@@ -36,7 +42,11 @@ class OfferImportService
             if ($shopDomain === 'aliexpress.com') continue;
             $shopId = $shopIdsByDomain[$shopDomain] ?? null;
 
-            if ($shopId == null) continue;
+            if ($shopId === null) {
+                $result['skipped']++;
+                $result['skipped_shops'][$shopDomain] = true;
+                continue;
+            }
 
             $offer_hash = hash(
                 'sha256',
@@ -50,7 +60,10 @@ class OfferImportService
             $rows[] = [...$offer,'offer_hash' => $offer_hash, 'shop_id' => $shopId, 'is_active' => true];
         }
 
-        if (empty($rows)) return null;
+        if (empty($rows)) {
+            $result['error'] = 'Ни один оффер не подходит';
+            return $result;
+        }
 
         DB::transaction(function () use ($network, $rows) {
             Offer::where('partner_network', $network->value)->update(['is_active' => false]);
@@ -62,8 +75,7 @@ class OfferImportService
             );
         });
 
-        return count($rows);
-
+        return $result;
     }
 
     private function resolveAdapter(PartnerNetwork $network): OfferFeedParser

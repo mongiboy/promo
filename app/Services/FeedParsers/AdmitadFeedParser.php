@@ -7,7 +7,6 @@ use App\Enums\PartnerNetwork;
 use App\Traits\ExtractsDomain;
 use App\Traits\ParsesDate;
 use Illuminate\Support\Facades\Storage;
-use App\Traits\ExtractsErid;
 
 class AdmitadFeedParser implements OfferFeedParser
 {

@@ -7,13 +7,12 @@ use App\Enums\PartnerNetwork;
 use App\Traits\ExtractsDomain;
 use App\Traits\ParsesDate;
 use Illuminate\Support\Facades\Storage;
-use App\Traits\ExtractsErid;
 
 class AdvcakeFeedParser implements OfferFeedParser
 {
     use ExtractsDomain, ParsesDate;
 
-    public function parseFeed(string $path): array
+    public function parseFeed (string $path): array
     {
         $filePath = Storage::path($path);
 
@@ -43,7 +42,7 @@ class AdvcakeFeedParser implements OfferFeedParser
         return $offers;
     }
 
-    private function mapToOfferData(array $row): ?array
+    private function mapToOfferData (array $row): ?array
     {
         if (empty($row['Реферальная ссылка'])) return null;
 
@@ -55,12 +54,9 @@ class AdvcakeFeedParser implements OfferFeedParser
             $discount = null;
         }
 
-        if ($row['Оффер'] === 'dostavka.magnit.ru (приложение)') {
-            $row['Оффер'] = 'magnit.ru';
-        }
 
         return [
-            'shop_domain' => $row['Оффер'],
+            'shop_domain' => $this->normalizeShopUrl($row['Оффер']),
             'title' => $row['Привязка к акции'],
             'description' => $row['Условия'] ?? null,
             'starts_at'  => $this->parseDate($row['Дата начала'] ?? null, 'Y-m-d'),
@@ -70,5 +66,14 @@ class AdvcakeFeedParser implements OfferFeedParser
             'url' => $row['Реферальная ссылка'],
             'partner_network' => PartnerNetwork::Advcake->value,
         ];
+    }
+
+    private function normalizeShopUrl (string $shopUrl): string
+    {
+        return match($shopUrl) {
+            'dostavka.magnit.ru (приложение)' => 'magnit.ru',
+            'kari.com (Influence)' => 'kari.com',
+            default => $shopUrl,
+        };
     }
 }

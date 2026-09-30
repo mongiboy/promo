@@ -62,16 +62,35 @@ class ImportOffers extends Page implements HasSchemas
     {
         $data = $this->form->getState();
 
-        $count = app(OfferImportService::class)->importFromFile(
+        $result = app(OfferImportService::class)->importFromFile(
             $data['partner_network'],
             $data['file'],
         );
 
-        Notification::make()
-            ->title('Импорт завершён')
-            ->body("Загружено офферов: {$count}")
-            ->success()
-            ->send();
+        if(isset($result['error'])) {
+            Notification::make()
+                ->title('Ошибка импорта')
+                ->body($result['error'])
+                ->danger()
+                ->send();
+        } else {
+            $body = [
+                "Строк в выгрузке: {$result['total']}",
+                "Не обработано: {$result['skipped']}",
+            ];
 
+            if ($result['skipped'] > 0) {
+                $body[] = '';
+                $body[] = 'Не найдены магазины:';
+                $body[] = implode(', ', array_keys($result['skipped_shops']));
+            }
+
+            Notification::make()
+                ->title('Импорт завершён')
+                ->body(implode("\n", $body))
+                ->seconds(10)
+                ->success()
+                ->send();
+        }
     }
 }
