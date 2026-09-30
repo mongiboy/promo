@@ -9,6 +9,7 @@ use App\Models\Shop;
 use App\Services\FeedParsers\AdmitadFeedParser;
 use App\Services\FeedParsers\AdvcakeFeedParser;
 use App\Traits\ExtractsDomain;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
 class OfferImportService
@@ -56,6 +57,14 @@ class OfferImportService
                 ($offer['starts_at'] ? substr($offer['starts_at'], 0, 10) : ''));
 
             unset($offer['shop_domain']);
+
+            $offer['starts_at'] = $offer['starts_at']
+                ? Carbon::parse($offer['starts_at'])->startOfDay()
+                : null;
+
+            $offer['expires_at'] = $offer['expires_at']
+                ? Carbon::parse($offer['expires_at'])->endOfDay()
+                : null;
 
             $rows[] = [...$offer,'offer_hash' => $offer_hash, 'shop_id' => $shopId, 'is_active' => true];
         }
