@@ -59,11 +59,11 @@ class OfferImportService
             unset($offer['shop_domain']);
 
             $offer['starts_at'] = $offer['starts_at']
-                ? Carbon::parse($offer['starts_at'])->startOfDay()
+                ? Carbon::parse($offer['starts_at'])->startOfDay()->format('Y-m-d H:i:s')
                 : null;
 
             $offer['expires_at'] = $offer['expires_at']
-                ? Carbon::parse($offer['expires_at'])->endOfDay()
+                ? Carbon::parse($offer['expires_at'])->endOfDay()->format('Y-m-d H:i:s')
                 : null;
 
             $rows[] = [...$offer,'offer_hash' => $offer_hash, 'shop_id' => $shopId, 'is_active' => true];

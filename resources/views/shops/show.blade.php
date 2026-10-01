@@ -8,7 +8,7 @@
     <x-breadcrumbs :$breadcrumbs />
     <div class="flex flex-col gap-2 pt-2 items-center lg:flex-row lg:gap-8 lg:justify-between">
         <div class="w-full max-w-80 min-h-20 flex items-center overflow-hidden">
-            <img class="w-full h-fit my-auto" src="{{ asset('storage/' . $shop->logo) }}" alt="{{ $shop->name }}">
+            <img class="w-full h-fit max-h-20 my-auto" src="{{ asset('storage/' . $shop->logo) }}" alt="{{ $shop->name }}">
         </div>
         <div class="mt-4">
             <h1 class="text-3xl/8 font-bold">Промокоды {{ $shop->name }} на&nbsp;{{ now()->translatedFormat('F Y') }}</h1>
