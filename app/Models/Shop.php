@@ -5,6 +5,8 @@ namespace App\Models;
 use App\Enums\PartnerNetwork;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Shop extends Model
@@ -22,6 +24,7 @@ class Shop extends Model
         'aliases',
         'networks',
         'sort',
+        'category_id',
     ];
 
     public function getRouteKeyName(): string
@@ -32,6 +35,11 @@ class Shop extends Model
     public function offers(): HasMany
     {
         return $this->hasMany(Offer::class);
+    }
+
+    public function category(): BelongsTo
+    {
+        return $this->belongsTo(Category::class);
     }
 
     protected $casts = [

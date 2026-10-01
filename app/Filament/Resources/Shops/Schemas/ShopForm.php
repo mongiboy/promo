@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Shops\Schemas;
 
 use App\Enums\PartnerNetwork;
+use App\Models\Category;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
@@ -60,6 +61,9 @@ class ShopForm
                                 Select::make('networks')
                                     ->multiple()
                                     ->options(PartnerNetwork::class)
+                                    ->columnSpan(2),
+                                Select::make('category_id')
+                                    ->options(Category::pluck('name', 'id'))
                                     ->columnSpan(2),
                                 Toggle::make('is_active')
                                     ->columnStart(1),

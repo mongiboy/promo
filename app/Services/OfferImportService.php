@@ -11,6 +11,7 @@ use App\Services\FeedParsers\AdvcakeFeedParser;
 use App\Traits\ExtractsDomain;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class OfferImportService
 {
@@ -20,7 +21,9 @@ class OfferImportService
     {
         $parser = $this->resolveAdapter($network);
         $offers = $parser->parseFeed($filePath);
-        return $this->upsertOffers($offers, $network);
+        $results = $this->upsertOffers($offers, $network);
+        Storage::disk('local')->delete($filePath);
+        return $results;
     }
 
     private function upsertOffers(array $offers, PartnerNetwork $network): array
@@ -49,7 +52,7 @@ class OfferImportService
                 continue;
             }
 
-            $offer_hash = hash(
+            $offerHash = hash(
                 'sha256',
                 $network->value . '|' .
                 $shopId . '|' .
@@ -66,7 +69,12 @@ class OfferImportService
                 ? Carbon::parse($offer['expires_at'])->endOfDay()->format('Y-m-d H:i:s')
                 : null;
 
-            $rows[] = [...$offer,'offer_hash' => $offer_hash, 'shop_id' => $shopId, 'is_active' => true];
+            $rows[] = [
+                ...$offer,
+                'offer_hash' => $offerHash,
+                'shop_id' => $shopId,
+                'is_active' => true,
+            ];
         }
 
         if (empty($rows)) {
@@ -82,6 +90,24 @@ class OfferImportService
                 uniqueBy: ['offer_hash'],
                 update: ['expires_at', 'url', 'is_active']
             );
+
+            $offers = Offer::query()
+                ->whereIn('offer_hash', collect($rows)->pluck('offer_hash'))
+                ->get(['id', 'shop_id']);
+
+            $shopCategories = Shop::query()
+                ->whereIn('id', $offers->pluck('shop_id')->unique())
+                ->pluck('category_id', 'id');
+
+            $categoryOffers = $offers
+                ->map(fn (Offer $offer) => [
+                    'offer_id' => $offer->id,
+                    'category_id' => $shopCategories[$offer->shop_id] ?? null,
+                ])
+                ->filter(fn (array $row) => $row['category_id'] !== null)
+                ->all();
+
+            DB::table('category_offer')->insertOrIgnore($categoryOffers);
         });
 
         return $result;
